@@ -1,0 +1,10 @@
+### POST request to transcribe endpoint
+POST https://YOUR-TOKEN.ngrok-free.app/api/transcribe
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary123456
+
+------WebKitFormBoundary123456
+Content-Disposition: form-data; name="file"; filename="example.mp3"
+Content-Type: audio/mpeg
+
+< ./example.mp3
+------WebKitFormBoundary123456--

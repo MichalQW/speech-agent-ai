@@ -1,0 +1,7 @@
+!pip install -U openai-whisper flask flask-ngrok python-dotenv
+!sudo apt install ffmpeg
+!wget -q -O ngrok-v3.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+!tar -xvf ngrok-v3.tgz
+!chmod +x ngrok
+!ngrok config add-authtoken $TOKEN
+!python whisper-api.py
