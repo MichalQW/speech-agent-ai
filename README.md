@@ -23,3 +23,8 @@ This is an open-source project, and we welcome contributions from developers, la
 - Submit pull requests
 - Report issues or suggest enhancements
 - Join our community discussions
+
+
+## Additional Resources
+
+- **[How to Run and Test the Whisper API in Google Colab](./external/open-ai-whisper/HOW-TO-RUN.md)** – A step-by-step guide on installing dependencies, setting up ngrok, and running the Flask-based Whisper transcription API.
