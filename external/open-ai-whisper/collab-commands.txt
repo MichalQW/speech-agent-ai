@@ -1,4 +1,4 @@
-!pip install -U openai-whisper flask flask-ngrok python-dotenv
+!pip install -U openai-whisper flask flask-ngrok python-dotenv pyngrok
 !sudo apt install ffmpeg
 !wget -q -O ngrok-v3.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
 !tar -xvf ngrok-v3.tgz
