@@ -5,5 +5,5 @@ import org.springframework.http.codec.multipart.FilePart;
 import reactor.core.publisher.Mono;
 
 public interface VoiceMessagesService {
-    Mono<ResponseEntity<String>> askWhisper(Mono<FilePart> file);
+    Mono<ResponseEntity<String>> convertSpeechToText(Mono<FilePart> file);
 }

@@ -7,12 +7,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.channels.Channels;
 
 @Service
 public class WhisperServiceImpl implements WhisperService {
@@ -26,22 +23,15 @@ public class WhisperServiceImpl implements WhisperService {
     }
 
     @Override
-    public Mono<ResponseEntity<String>> sendPostRequest(Mono<FilePart> fileMono) {
+    public Mono<ResponseEntity<String>> process(Mono<FilePart> fileMono) {
         return fileMono.flatMap(filePart ->
-                filePart.content()
-                        .reduce(new ByteArrayOutputStream(),
-                                (baos, dataBuffer) -> {
-                                    try {
-                                        Channels.newChannel(baos).write(dataBuffer.asByteBuffer().asReadOnlyBuffer());
-                                        return baos;
-                                    } catch (IOException e) {
-                                        throw new RuntimeException("Can't read dataBuffer to ByteArrayOutputStream", e);
-                                    } finally {
-                                        DataBufferUtils.release(dataBuffer);
-                                    }
-                                }
-                        ).flatMap(baos -> {
-                            ByteArrayResource byteArrayResource = new ByteArrayResource(baos.toByteArray()) {
+                DataBufferUtils.join(filePart.content())
+                        .flatMap(dataBuffer -> {
+                            byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                            dataBuffer.read(bytes);
+                            DataBufferUtils.release(dataBuffer);
+
+                            ByteArrayResource byteArrayResource = new ByteArrayResource(bytes) {
                                 @Override
                                 public String getFilename() {
                                     return filePart.filename();
@@ -50,7 +40,7 @@ public class WhisperServiceImpl implements WhisperService {
 
                             return webClient.post()
                                     .contentType(MediaType.MULTIPART_FORM_DATA)
-                                    .body(org.springframework.web.reactive.function.BodyInserters.fromMultipartData("file", byteArrayResource))
+                                    .body(BodyInserters.fromMultipartData("file", byteArrayResource))
                                     .retrieve()
                                     .toEntity(String.class);
                         })

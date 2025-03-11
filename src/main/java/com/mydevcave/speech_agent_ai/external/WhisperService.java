@@ -5,5 +5,5 @@ import org.springframework.http.codec.multipart.FilePart;
 import reactor.core.publisher.Mono;
 
 public interface WhisperService {
-    Mono<ResponseEntity<String>> sendPostRequest(Mono<FilePart> fileMono);
-};
+    Mono<ResponseEntity<String>> process(Mono<FilePart> fileMono);
+}
