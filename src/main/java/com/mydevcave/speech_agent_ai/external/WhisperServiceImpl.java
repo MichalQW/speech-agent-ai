@@ -17,6 +17,9 @@ public class WhisperServiceImpl implements WhisperService {
     @Value("${external.whisper.url}")
     private String whisperUrl;
 
+    @Value("${external.whisper.api-key}")
+    private String apiKey;
+
     private final WebClient webClient;
 
     public WhisperServiceImpl(WebClient.Builder webClientBuilder) {
@@ -35,6 +38,7 @@ public class WhisperServiceImpl implements WhisperService {
             return webClient.post()
                     .uri(whisperUrl)
                     .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .header("X-API-KEY", apiKey)
                     .body(Mono.just(fileResource), ByteArrayResource.class)
                     .retrieve()
                     .toEntity(String.class)
