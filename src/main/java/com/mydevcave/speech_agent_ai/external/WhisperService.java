@@ -1,10 +1,9 @@
 package com.mydevcave.speech_agent_ai.external;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
+import org.springframework.http.codec.multipart.FilePart;
+import reactor.core.publisher.Mono;
 
 public interface WhisperService {
-    ResponseEntity<String> sendPostRequest(MultipartFile file) throws IOException;
+    Mono<ResponseEntity<String>> process(Mono<FilePart> fileMono);
 }

@@ -1,10 +1,9 @@
 package com.mydevcave.speech_agent_ai.service;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
+import org.springframework.http.codec.multipart.FilePart;
+import reactor.core.publisher.Mono;
 
 public interface VoiceMessagesService {
-    ResponseEntity<String> askWhisper(MultipartFile file);
+    Mono<ResponseEntity<String>> convertSpeechToText(Mono<FilePart> file);
 }

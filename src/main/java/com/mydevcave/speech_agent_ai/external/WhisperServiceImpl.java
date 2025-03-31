@@ -2,14 +2,14 @@ package com.mydevcave.speech_agent_ai.external;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Mono;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.io.IOException;
+import reactor.core.publisher.Mono;
 
 @Service
 public class WhisperServiceImpl implements WhisperService {
@@ -22,29 +22,36 @@ public class WhisperServiceImpl implements WhisperService {
 
     private final WebClient webClient;
 
-    public WhisperServiceImpl(WebClient.Builder webClientBuilder) {
+    public WhisperServiceImpl(
+            WebClient.Builder webClientBuilder,
+            @Value("${external.whisper.url}") String whisperUrl) {
         this.webClient = webClientBuilder.baseUrl(whisperUrl).build();
     }
 
-    public ResponseEntity<String> sendPostRequest(MultipartFile file) {
-        try {
-            ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return file.getOriginalFilename();
-                }
-            };
+    @Override
+    public Mono<ResponseEntity<String>> process(Mono<FilePart> fileMono) {
+        return fileMono.flatMap(filePart ->
+                DataBufferUtils.join(filePart.content())
+                        .flatMap(dataBuffer -> {
+                            byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                            dataBuffer.read(bytes);
+                            DataBufferUtils.release(dataBuffer);
 
-            return webClient.post()
-                    .uri(whisperUrl)
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
-                    .header("X-API-KEY", apiKey)
-                    .body(Mono.just(fileResource), ByteArrayResource.class)
-                    .retrieve()
-                    .toEntity(String.class)
-                    .block();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read file contents", e);
-        }
+                            ByteArrayResource byteArrayResource = new ByteArrayResource(bytes) {
+                                @Override
+                                public String getFilename() {
+                                    return filePart.filename();
+                                }
+                            };
+
+                            return webClient.post()
+                                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                                    .header("X-API-KEY", apiKey)
+                                    .body(BodyInserters.fromMultipartData("file", byteArrayResource))
+                                    .retrieve()
+                                    .toEntity(String.class);
+                        })
+        );
     }
 }
+

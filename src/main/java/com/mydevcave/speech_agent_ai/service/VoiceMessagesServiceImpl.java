@@ -1,17 +1,18 @@
 package com.mydevcave.speech_agent_ai.service;
 
-import com.mydevcave.speech_agent_ai.external.WhisperServiceImpl;
-import lombok.NoArgsConstructor;
+import com.mydevcave.speech_agent_ai.external.WhisperService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 @Service
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class VoiceMessagesServiceImpl implements VoiceMessagesService {
-    WhisperServiceImpl whisperService;
+    private final WhisperService whisperService;
 
-    public ResponseEntity<String> askWhisper(MultipartFile file) {
-        return whisperService.sendPostRequest(file);
+    public Mono<ResponseEntity<String>> convertSpeechToText(Mono<FilePart> file) {
+        return whisperService.process(file);
     }
 }

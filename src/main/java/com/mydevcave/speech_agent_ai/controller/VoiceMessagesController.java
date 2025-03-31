@@ -1,29 +1,21 @@
 package com.mydevcave.speech_agent_ai.controller;
 
-import com.mydevcave.speech_agent_ai.service.VoiceMessagesServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import com.mydevcave.speech_agent_ai.service.VoiceMessagesService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class VoiceMessagesController {
-    @Autowired
-    VoiceMessagesServiceImpl voiceMessagesServiceImpl;
+    private final VoiceMessagesService service;
 
-    @PostMapping("/upload")
-    private ResponseEntity<String> uploadVoiceMessage(@RequestParam("file") MultipartFile file) {
-
-        if (file.isEmpty()) {
-            return ResponseEntity.status(400).body("No file uploaded.");
-        }
-
-//        if (!VoiceMessagesValidation.isValid(file)) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File has to be max 10mb and extensions: mp3 or .wav");
-//        }
-
-        return voiceMessagesServiceImpl.askWhisper(file);
+    @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Mono<ResponseEntity<String>> uploadVoiceMessage(@RequestPart("file") Mono<FilePart> file) {
+        return service.convertSpeechToText(file);
     }
 }
