@@ -1,5 +1,5 @@
 ### POST request to transcribe endpoint
-POST https://YOUR-TOKEN.ngrok-free.app/api/transcribe
+POST http://localhost:8080/api/upload
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary123456
 
 ------WebKitFormBoundary123456

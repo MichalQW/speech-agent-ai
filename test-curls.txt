@@ -1,0 +1,1 @@
+curl -X POST -F "file=@external/open-ai-whisper/example.mp3" http://localhost:8080/api/upload
