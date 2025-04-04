@@ -18,6 +18,9 @@ This is an open-source project, and we welcome contributions from developers, la
 
 ### How to Contribute:
 
+**[CONTRIBUTORS.md](./CONTRIBUTORS.md)**   
+
+
 - Fork the repository
 - Create a feature branch
 - Submit pull requests

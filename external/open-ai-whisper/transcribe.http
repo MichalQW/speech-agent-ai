@@ -1,6 +1,7 @@
 ### POST request to transcribe endpoint
 POST http://localhost:8080/api/upload
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary123456
+X-API-KEY: testkey
 
 ------WebKitFormBoundary123456
 Content-Disposition: form-data; name="file"; filename="example.mp3"

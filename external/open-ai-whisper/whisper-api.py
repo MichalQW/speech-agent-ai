@@ -3,11 +3,23 @@ import whisper
 import tempfile
 import os
 from pyngrok import ngrok
+from functools import wraps
 
 app = Flask(__name__)
 model = whisper.load_model("base")
 
+API_KEY = os.environ.get("API_KEY")
+
+def require_api_key(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if request.headers.get('x-api-key') != API_KEY:
+            return jsonify({"error": "Unauthorized"}), 401
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/api/transcribe', methods=['POST'])
+@require_api_key
 def transcribe():
     file = request.files['file']
     temp = tempfile.NamedTemporaryFile(delete=False)

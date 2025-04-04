@@ -4,4 +4,3 @@
 !tar -xvf ngrok-v3.tgz
 !chmod +x ngrok
 !ngrok config add-authtoken $TOKEN
-!python whisper-api.py
